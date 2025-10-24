@@ -5,7 +5,24 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        zentry: ['zentry', 'sanf-serif'],
+        general: ['gneral', 'sanf-serif'],
+        'circular-web': ['circular-web', 'sanf-serif'],
+        'robert-medium': ['robert-medium', 'sanf-serif'],
+        'robert-regular': ['robert-regular', 'sanf-serif'],
+      },
+      colors: {
+        blue: {
+          50: 'DFDFF0',
+          75: '#DFDFF2',
+          100:'#F0F2AFA',
+          200: '#0101010',
+          300: '#47B7DD'
+        }
+      }
+    },
   },
   plugins: [],
 }
