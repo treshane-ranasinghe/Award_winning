@@ -1,15 +1,13 @@
-import { useRef, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 const Hero = () => {
   const totalVideos = 4;
+  const [backgroundIndex, setBackgroundIndex] = useState(1);
   const [currentIndex, setCurrentIndex] = useState(1);
-  const [hasClicked, setHasClicked] = useState(false);
-  const [loadedVideos, setLoadedVideos] = useState(0);
-  const [opacity, setOpacity] = useState(1); // for fade effect
+  const [opacity, setOpacity] = useState(1);
+  const [showBox, setShowBox] = useState(false);
 
-  const videoRef = useRef(null);
-
-  // Preload all videos to reduce flicker
+  // Preload all videos
   useEffect(() => {
     for (let i = 1; i <= totalVideos; i++) {
       const vid = document.createElement("video");
@@ -18,44 +16,65 @@ const Hero = () => {
     }
   }, []);
 
-  const handleVideoLoad = () => setLoadedVideos((prev) => prev + 1);
-
-  const handleMiniVdClick = () => {
-    setHasClicked(true);
-
-    // Fade out first
-    setOpacity(0);
-
+  // Handle click to switch background
+  const handleVideoClick = () => {
+    setOpacity(0); // fade out
     setTimeout(() => {
-      setCurrentIndex((prevIndex) => (prevIndex >= totalVideos ? 1 : prevIndex + 1));
-      setOpacity(1); // Fade in
-    }, 300); // 300ms fade duration
+      setBackgroundIndex(currentIndex);
+      setOpacity(1); // fade in
+      setCurrentIndex((prev) =>
+        prev >= totalVideos ? 1 : prev + 1
+      );
+    }, 400);
   };
 
   const getVideoSrc = (index) => `/videos/hero-${index}.mp4`;
 
   return (
-    <div className="relative h-screen w-screen overflow-x-hidden flex items-center justify-center bg-blue-100">
-      <div
-        id="video-frame"
-        className="relative z-10 h-[80vh] w-[90vw] overflow-hidden rounded-lg flex items-center justify-center"
-      >
+    <div
+      className="relative h-screen w-screen overflow-hidden bg-black"
+      onMouseEnter={() => setShowBox(true)}
+      onMouseLeave={() => setShowBox(false)}
+    >
+      {/* Background video */}
+      <video
+        key={backgroundIndex}
+        src={getVideoSrc(backgroundIndex)}
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-700 ease-in-out"
+        style={{ opacity }}
+      />
+
+      {/* Dark overlay */}
+      <div className="absolute inset-0 bg-black bg-opacity-40"></div>
+
+      {/* Hero content */}
+      <div className="relative z-10 flex flex-col items-center justify-center h-full">
+      
+
+        {/* Center hover box */}
         <div
-          className="cursor-pointer overflow-hidden rounded-lg shadow-lg transition-transform duration-500 ease-in hover:scale-105"
-          onClick={handleMiniVdClick}
+          className={`transition-opacity duration-500 ease-in-out ${
+            showBox ? "opacity-100 scale-100" : "opacity-0 scale-90 pointer-events-none"
+          }`}
         >
-          <video
-            ref={videoRef}
-            key={currentIndex} // ensures React reloads video on change
-            src={getVideoSrc(currentIndex)}
-            loop
-            muted
-            autoPlay
-            playsInline
-            onLoadedData={handleVideoLoad}
-            className="w-full h-full object-cover rounded-lg transition-opacity duration-300"
-            style={{ opacity: opacity }}
-          />
+          <div
+            className="cursor-pointer overflow-hidden rounded-2xl shadow-xl hover:scale-105 transition-transform duration-500"
+            onClick={handleVideoClick}
+          >
+            <video
+              key={currentIndex}
+              src={getVideoSrc(currentIndex)}
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-[600px] h-[340px] object-cover rounded-2xl"
+            />
+          </div>
         </div>
       </div>
     </div>
